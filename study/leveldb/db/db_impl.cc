@@ -1304,6 +1304,8 @@ Status DBImpl::MakeRoomForWrite(bool force) {
       // this delay hands over some CPU to the compaction thread in
       // case it is sharing the same core as the writer.
       mutex_.Unlock();
+      Log(options_.info_log, "level-0 file_num:%d > slowdownFileNumThreshold:%d, thread [%ul] will sleep 1s, file=%s, function=%s, line=%d", 
+      	versions_->NumLevelFiles(0), config::kL0_SlowdownWritesTrigger, gettid(), __FILE__, __func__, __LINE__);
       env_->SleepForMicroseconds(1000);
       allow_delay = false;  // Do not delay a single write more than once
       mutex_.Lock();
@@ -1318,7 +1320,7 @@ Status DBImpl::MakeRoomForWrite(bool force) {
       bg_cv_.Wait();
     } else if (versions_->NumLevelFiles(0) >= config::kL0_StopWritesTrigger) {
       // There are too many level-0 files.
-      Log(options_.info_log, "Too many L0 files; waiting...\n");
+      Log(options_.info_log, "level-0 file_num:%d, stopwriteFileNumThreshold:%d, Too many L0 files; waiting...\n", versions_->NumLevelFiles(0), config::kL0_StopWritesTrigger);
       bg_cv_.Wait();
     } else {
       // Attempt to switch to a new memtable and trigger compaction of old
