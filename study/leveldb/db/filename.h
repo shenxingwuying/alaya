@@ -26,6 +26,26 @@ enum FileType {
   kTempFile,
   kInfoLogFile  // Either the current one, or an old one
 };
+static const char* FileType2str(int ft) {
+    switch (ft) {
+        case kLogFile:
+            return "kLogFile";
+        case kDBLockFile:
+            return "kDBLockFile";
+        case kTableFile:
+            return "kTableFile";
+        case kDescriptorFile:
+            return "kDescriptorFile";
+        case kCurrentFile:
+            return "kCurrentFile";
+        case kTempFile:
+            return "kTempFile";
+        case kInfoLogFile:
+            return "kInfoLogFile";
+        default:
+            return "kInvaild";
+    }
+}
 
 // Return the name of the log file with the specified number
 // in the db named by "dbname".  The result will be prefixed with

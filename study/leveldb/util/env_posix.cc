@@ -474,6 +474,7 @@ class PosixEnv : public Env {
     return thread_id;
   }
 
+
   virtual Status NewLogger(const std::string& fname, Logger** result) {
     FILE* f = fopen(fname.c_str(), "w");
     if (f == NULL) {
@@ -523,6 +524,13 @@ class PosixEnv : public Env {
   PosixLockTable locks_;
   MmapLimiter mmap_limit_;
 };
+
+static uint64_t get_tid() {
+  pthread_t tid = pthread_self();
+  uint64_t thread_id = 0;
+  memcpy(&thread_id, &tid, std::min(sizeof(thread_id), sizeof(tid)));
+  return thread_id;
+}
 
 PosixEnv::PosixEnv() : started_bgthread_(false) {
   PthreadCall("mutex_init", pthread_mutex_init(&mu_, NULL));
