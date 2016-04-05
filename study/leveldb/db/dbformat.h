@@ -52,6 +52,17 @@ enum ValueType {
   kTypeDeletion = 0x0,
   kTypeValue = 0x1
 };
+static const char* ValueType2str(int vt) {
+    switch(vt) {
+        case kTypeDeletion:
+            return "kTypeDeletion";
+        case kTypeValue:
+            return "kTypeValue";
+        default:
+            return "kInvaild";
+    }
+}
+
 // kValueTypeForSeek defines the ValueType that should be passed when
 // constructing a ParsedInternalKey object for seeking to a particular
 // sequence number (since we sort sequence numbers in decreasing order

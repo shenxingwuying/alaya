@@ -1,0 +1,13 @@
+*.o
+*.a
+*.pyc
+tags
+cscope.*
+*/test
+test
+study
+*/*/test
+test/jdk_tool/*
+tools/cpp/*
+tools/python/*
+tools/op/*

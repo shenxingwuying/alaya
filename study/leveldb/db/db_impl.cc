@@ -32,6 +32,7 @@
 #include "util/coding.h"
 #include "util/logging.h"
 #include "util/mutexlock.h"
+#include "util/dcommon.h"
 
 namespace leveldb {
 
@@ -634,6 +635,7 @@ void DBImpl::BGWork(void* db) {
 }
 
 void DBImpl::BackgroundCall() {
+  Log(options_.info_log, "BackgroundCall in thread [%lu]", get_tid());
   MutexLock l(&mutex_);
   assert(bg_compaction_scheduled_);
   if (shutting_down_.Acquire_Load()) {
@@ -1304,8 +1306,8 @@ Status DBImpl::MakeRoomForWrite(bool force) {
       // this delay hands over some CPU to the compaction thread in
       // case it is sharing the same core as the writer.
       mutex_.Unlock();
-      Log(options_.info_log, "level-0 file_num:%d > slowdownFileNumThreshold:%d, thread [%ul] will sleep 1s, file=%s, function=%s, line=%d", 
-      	versions_->NumLevelFiles(0), config::kL0_SlowdownWritesTrigger, gettid(), __FILE__, __func__, __LINE__);
+      Log(options_.info_log, "level-0 file_num:%d > slowdownFileNumThreshold:%d, thread [%lu] will sleep 1s, file=%s, function=%s, line=%d", 
+              versions_->NumLevelFiles(0), config::kL0_SlowdownWritesTrigger, get_tid(), __FILE__, __func__, __LINE__);
       env_->SleepForMicroseconds(1000);
       allow_delay = false;  // Do not delay a single write more than once
       mutex_.Lock();
