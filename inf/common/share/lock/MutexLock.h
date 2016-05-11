@@ -19,5 +19,6 @@ public:
     }
 
 private:
+    friend class CondVar;
     pthread_mutex_t mutex_;
 }
