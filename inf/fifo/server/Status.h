@@ -21,7 +21,11 @@ class Status {
         }
         Status(Code code, Slice msg, Slice msg2) {
         }
-        ~Status() { delete[] state_; }
+        ~Status() {
+            if (state_ != NULL) {
+                delete[] state_;
+            }
+        }
         static const char* CopyState(const char* s) {
             uint32_t size;
             memcpy(&size, s, sizeof(uint32_t));
