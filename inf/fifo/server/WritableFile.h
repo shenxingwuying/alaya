@@ -26,7 +26,7 @@ class WritableFile {
     public:
         WritableFile() {}
         virtual ~WritableFile();
-
+        virtual Status Open() = 0;
         virtual Status Append(const Slice& data) = 0;
         virtual Status Close() = 0;
         virtual Status Flush() = 0;
@@ -51,7 +51,14 @@ class PosixWritableFile : public WritableFile {
         }
 
         Status Open() {
-        
+            if (file_ == NULL) {
+                if ((file_ = fopen(filename.data(), "w+")) != 0) {
+                    return Status::IOError(filename_, errno);
+                }
+            } else {
+                return Status::IOError(filename_, errno);
+            }
+            return Status::OK();
         }
         Status Create() {
             std::string filename = GetFileName();
