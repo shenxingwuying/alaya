@@ -117,8 +117,7 @@ void decode_rs()
         else
             recd[i] = index_of[recd[i]];
 
-    for (i=1; i<=nn-kk; i++)
-    {
+    for (i=1; i<=nn-kk; i++) {
         s[i] = 0 ;
         for (j=0; j<nn; j++)
         if (recd[j]!=-1)
@@ -172,15 +171,13 @@ void decode_rs()
                 while ((d[q]==-1) && (q>0))
                     q-- ;
 /* have found first non-zero d[q]  */
-                if (q>0)
-                {
+                if (q>0) {
                     j=q ;
-                do
-                {
+                do {
                     j-- ;
                     if ((d[j]!=-1) && (u_lu[q]<u_lu[j]))
                     q = j ;
-                }while (j>0) ;
+                } while (j>0) ;
              } ;
              /* have now found q such that d[u]!=0 and u_lu[q] is maximum */
 /* store degree of new elp polynomial */
@@ -194,58 +191,54 @@ void decode_rs()
             for (i=0; i<=l[q]; i++)
                 if (elp[q][i]!=-1)
                     elp[u+1][i+u-q] = alpha_to[(d[u]+nn-d[q]+elp[q][i])%nn] ;
-            for (i=0; i<=l[u]; i++)
-              {
-                  elp[u+1][i] ^= elp[u][i] ;
+            for (i=0; i<=l[u]; i++) {
+                elp[u+1][i] ^= elp[u][i] ;
                 elp[u][i] = index_of[elp[u][i]] ;  /*convert old elp value to index*/
-              }
+            }
         }
         u_lu[u+1] = u-l[u+1] ;
 /* form (u+1)th discrepancy */
-        if (u<nn-kk)    /* no discrepancy computed on last iteration */
-        {
-            if (s[u+1]!=-1)
+        if (u<nn-kk) {    /* no discrepancy computed on last iteration */
+            if (s[u+1]!=-1) {
                 d[u+1] = alpha_to[s[u+1]] ;
-            else
-                d[u+1] = 0 ;
-            for (i=1; i<=l[u+1]; i++)
+            } else {
+                d[u+1] = 0;
+            }
+            for (i=1; i<=l[u+1]; i++) {
                 if ((s[u+1-i]!=-1) && (elp[u+1][i]!=0))
-                    d[u+1] ^= alpha_to[(s[u+1-i]+index_of[elp[u+1][i]])%nn] ;
+                    d[u+1] ^= alpha_to[(s[u+1-i]+index_of[elp[u+1][i]])%nn];
+            }
             d[u+1] = index_of[d[u+1]] ;    /* put d[u+1] into index form */
         }
-    } while ((u<nn-kk) && (l[u+1]<=tt)) ;
+    } while ((u<nn-kk) && (l[u+1]<=tt));
     u++ ;
-    if (l[u]<=tt)         /* can correct error */
-    {
+    if (l[u]<=tt) {         /* can correct error */
 /* put elp into index form */
-        for (i=0; i<=l[u]; i++)
-            elp[u][i] = index_of[elp[u][i]] ;
+        for (i=0; i<=l[u]; i++) {
+            elp[u][i] = index_of[elp[u][i]];
+        }
 /* find roots of the error location polynomial */
         /*求错误位置多项式的根*/
         for (i=1; i<=l[u]; i++)
             reg[i] = elp[u][i] ;
         count = 0 ;
-        for (i=1; i<=nn; i++)
-        {
+        for (i=1; i<=nn; i++) {
             q = 1 ;
             for (j=1; j<=l[u]; j++)
-            if (reg[j]!=-1)
-            {
+            if (reg[j]!=-1) {
                 reg[j] = (reg[j]+j)%nn ;
                 q ^= alpha_to[reg[j]] ;
-            } ;
-            if (!q)        /* store root and error location number indices */
-            {
+            }
+            if (!q) {       /* store root and error location number indices */
                 root[count] = i;
                 loc[count] = nn-i ;
                 count++ ;
                 printf("根%d=%d\n", q, nn-i);
             };
-        } ;
+        };
         if (count==l[u])    /* no. roots = degree of elp hence <= tt errors */
         {/* form polynomial z(x) */
-            for (i=1; i<=l[u]; i++)        /* Z[0] = 1 always - do not need */
-            {
+            for (i=1; i<=l[u]; i++) {       /* Z[0] = 1 always - do not need */
                 if ((s[i]!=-1) && (elp[u][i]!=-1))
                     z[i] = alpha_to[s[i]] ^ alpha_to[elp[u][i]] ;
                 else if ((s[i]!=-1) && (elp[u][i]==-1))
@@ -258,25 +251,23 @@ void decode_rs()
                     if ((s[j]!=-1) && (elp[u][i-j]!=-1))
                         z[i] ^= alpha_to[(elp[u][i-j] + s[j])%nn] ;
                 z[i] = index_of[z[i]] ;         /* put into index form */
-            } ;
+            };
              /* evaluate errors at locations given by error location numbers loc[i] */
             /*计算错误图样*/
-            for (i=0; i<nn; i++)
-            {
+            for (i=0; i<nn; i++) {
                 err[i] = 0 ;
-                if (recd[i]!=-1)        /* convert recd[] to polynomial form */
+                if (recd[i]!=-1) {       /* convert recd[] to polynomial form */
                     recd[i] = alpha_to[recd[i]] ;
-                else
-                    recd[i] = 0 ;
-             }
-            for (i=0; i<l[u]; i++)    /* compute numerator of error term first */
-            {
+                } else {
+                    recd[i] = 0;
+                }
+            }
+            for (i=0; i<l[u]; i++) {   /* compute numerator of error term first */
                 err[loc[i]] = 1;       /* accounts for z[0] */
                 for (j=1; j<=l[u]; j++)
                     if (z[j]!=-1)
                         err[loc[i]] ^= alpha_to[(z[j]+j*root[i])%nn] ;
-                if (err[loc[i]]!=0)
-                {
+                if (err[loc[i]]!=0) {
                     err[loc[i]] = index_of[err[loc[i]]] ;
                     q = 0 ;     /* form denominator of error term */
                     for (j=0; j<l[u]; j++)
@@ -287,35 +278,31 @@ void decode_rs()
                     recd[loc[i]] ^= err[loc[i]] ;  /*recd[i] must be in polynomial form */
                 }
             }
-        }
-                else    /* no. roots != degree of elp => >tt errors and cannot solve */
-        {    /*错误太多，无法更正*/
+        } else {   /* no. roots != degree of elp => >tt errors and cannot solve */ /*错误太多，无法更正*/
             for (i=0; i<nn; i++)        /* could return error flag if desired */
-                if (recd[i]!=-1)        /* convert recd[] to polynomial form*/
-                    recd[i] = alpha_to[recd[i]] ;
-                else
+                if (recd[i]!=-1) {       /* convert recd[] to polynomial form*/
+                    recd[i] = alpha_to[recd[i]];
+                } else {
                     recd[i] = 0 ;     /* just output received codeword as is */
+                }
         }
-        }
-        else         /* elp has degree has degree >tt hence cannot solve */
-        {    /*错误太多，无法更正*/
+        } else {         /* elp has degree has degree >tt hence cannot solve */    /*错误太多，无法更正*/
             for (i=0; i<nn; i++)       /* could return error flag if desired */
-                if (recd[i]!=-1)        /* convert recd[] to polynomial form */
-                    recd[i] = alpha_to[recd[i]] ;
-                else
+                if (recd[i]!=-1) {       /* convert recd[] to polynomial form */
+                    recd[i] = alpha_to[recd[i]];
+                } else {
                     recd[i] = 0 ;     /* just output received codeword as is */
+                }
+        }
+    } else {      /* no non-zero syndromes => no errors: output received codeword */
+        for (i=0; i<nn; i++) {
+            if (recd[i]!=-1) {        /* convert recd[] to polynomial form */
+                recd[i] = alpha_to[recd[i]];
+            } else {
+                recd[i] = 0 ;
+            }
         }
     }
-    else       /* no non-zero syndromes => no errors: output received codeword */
-        for (i=0; i<nn; i++)
-        {
-            if (recd[i]!=-1)        /* convert recd[] to polynomial form */
-                recd[i] = alpha_to[recd[i]] ;
-            else
-                recd[i] = 0 ;
-            //printf("*");
-        }
-
  }
 int main()
 {
@@ -324,8 +311,9 @@ int main()
     printf("请输入要编码的字符串：\n");
     scanf("%s", strSrc);
     length = strlen(strSrc);
-    if(length <= 0)
+    if(length <= 0) {
         return 0;
+    }
 
     generate_gf();
     printf("Look-up tables for GF(2**%2d)\n",mm) ;
