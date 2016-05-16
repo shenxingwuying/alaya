@@ -26,12 +26,12 @@ struct LogHeader {
     uint32_t length;
     uint32_t crc32;
     char type;
-}
+};
 
 struct LogEntry {
     struct LogHeader header;
     const char* content;
-}
+};
 
 
 

@@ -16,6 +16,7 @@
 #ifndef ALAYA_WRITABLE_H
 #define ALAYA_WRITABLE_H
 
+#include <errno.h>
 #include <assert.h>
 #include <stdio.h>
 #include "Status.h"
@@ -44,6 +45,9 @@ class PosixWritableFile : public WritableFile {
         FILE* file_;
     public:
         PosixWritableFile(std::string filename, FILE* file) : filename_(filename), file_(file) {}
+        PosixWritableFile(std::string filename) : filename_(filename), file_(NULL) {
+            Open();
+        }
         ~PosixWritableFile() {
             if (file_ != NULL) {
                 fclose(file_);
@@ -52,18 +56,13 @@ class PosixWritableFile : public WritableFile {
 
         Status Open() {
             if (file_ == NULL) {
-                if ((file_ = fopen(filename.data(), "w+")) != 0) {
+                if ((file_ = fopen(filename_.data(), "w+")) != 0) {
                     return Status::IOError(filename_, errno);
                 }
             } else {
                 return Status::IOError(filename_, errno);
             }
             return Status::OK();
-        }
-        Status Create() {
-            std::string filename = GetFileName();
-            fopen(filename.c_str(), "w+");
-        
         }
         Status Append(const Slice& data) {
             size_t r = fwrite(data.data(), 1, data.size(), file_);
@@ -92,7 +91,7 @@ class PosixWritableFile : public WritableFile {
             }
             return Status::OK();
         }
-}
+};
 
 #endif
 

@@ -13,6 +13,8 @@
  *
  */
 
+#include <errno.h>
+
 class Status {
     public:
         Status() : state_(NULL) {}
@@ -20,6 +22,19 @@ class Status {
             state_ = (s.state_ == NULL ? NULL : CopyState(s.state_));
         }
         Status(Code code, Slice msg, Slice msg2) {
+            uint32_t len1 = msg.size();
+            uint32_t len2 = msg2.size();
+            uint32_t size = len1 + (len2 ? len2 + 2 : 0);
+            state_ = new char[5+size];
+
+            memcpy(state_, &size, sizeof(uint32_t));
+            state_[4] = static_cast<char>(code);
+            memcpy(state_+5, msg.data(), len1);
+            if (len2) {
+                state_[len1+5] = ':';
+                state_[len1+6] = ' ';
+                memcpy(state_+len1+7, msg2.data(), len2);
+            }
         }
         ~Status() {
             if (state_ != NULL) {
@@ -35,6 +50,9 @@ class Status {
         }
         static Status OK() {
             return Status();
+        }
+        static Status IOError(const std::string& msg, int errcode) const {
+            return Status::IOError(msg, strerror(errcode));
         }
         static Status IOError(const Slice& msg, const Slice& msg2 = Slice()) {
             return Status(kIOError, msg, msg2);
@@ -56,9 +74,9 @@ class Status {
             kIOError
         }
         Code code() {
-            return (state == NULL) ? kOk : static_case<Code>(state_[4]);
+            return (state == NULL) ? kOk : static_cast<Code>(state_[4]);
         }
-}
+};
 
 
 

@@ -26,7 +26,7 @@ class Slice {
         Slice() : data_(""), size_(0) {}
         Slice(const char* d, size_t n) : data_(d), size_(n) {}
         Slice(const std::string& s) : data_(s.data()), size_(s.size()) {}
-        Slice(const char* s) : data_(d), size_(strlen(d)) {}
+        Slice(const char* d) : data_(d), size_(strlen(d)) {}
 
         const char* data() const {
             return data;
@@ -76,7 +76,7 @@ class Slice {
     private:
         const char* data_;
         size_t size_;
-}
+};
 #endif
 
 /* vim: set expandtab ts=4 sw=4 sts=4 tw=100: */

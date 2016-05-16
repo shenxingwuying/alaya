@@ -7,10 +7,10 @@
 #include "extypes.h"
 
 #if !defined(__i386__) && !defined(__x86_64__) && !defined(__arm__)
-#error	"Arch not supprot!"
+#error "Arch not supprot!"
 #endif
 
-#ifdef	__cplusplus
+#ifdef __cplusplus
 extern "C" {
 #endif
 
@@ -56,12 +56,12 @@ static inline int64 atomic_comp_swap64(volatile void *lockword, int64 exchange, 
 #else
 static inline int atomic_add(volatile int *count, int add) {
 #ifdef __linux__
-	__asm__ __volatile__(
-		"lock xadd %0, (%1);"
-		: "=a"(add)
-		: "r"(count), "a"(add)
-		: "memory"
-	);
+    __asm__ __volatile__(
+        "lock xadd %0, (%1);"
+        : "=a"(add)
+        : "r"(count), "a"(add)
+        : "memory"
+    );
 #else
 #error "not done yet "
 #endif
@@ -230,7 +230,7 @@ static inline int64 atomic_compare_exchange(volatile int64 * pv,
 }
 #endif // ifdef __linux__
 
-#ifdef	__cplusplus
+#ifdef __cplusplus
 }
 #endif
 
