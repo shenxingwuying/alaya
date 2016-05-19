@@ -67,7 +67,7 @@ class PosixWritableFile : public WritableFile {
         Status Append(const Slice& data) {
             size_t r = fwrite(data.data(), 1, data.size(), file_);
             if (r != data.size()) {
-                return IOError(filename_, errno);
+                return Status::IOError(filename_, errno);
             }
             return Status::OK();
         }
@@ -86,9 +86,7 @@ class PosixWritableFile : public WritableFile {
             return Status::OK();
         }
         Status Sync() {
-            if (fsync(fileno(file_)) != 0) {
-                return Status::IOError(filename_, errno);
-            }
+            // not implement
             return Status::OK();
         }
 };

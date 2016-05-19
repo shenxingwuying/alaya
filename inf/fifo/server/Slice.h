@@ -29,7 +29,7 @@ class Slice {
         Slice(const char* d) : data_(d), size_(strlen(d)) {}
 
         const char* data() const {
-            return data;
+            return data_;
         }
         size_t size() const {
             return size_;
@@ -45,12 +45,13 @@ class Slice {
             data_ = "";
             size_ = 0;
         }
-        void remove_prefix(int n) const {
+        void remove_prefix(int n) {
+            assert(n <= size());
             data_ += n;
             size_ -= n;
         }
         std::string ToString() const {
-            return std::string(data_, size_)
+            return std::string(data_, size_);
         }
         int compare(const Slice& b) const {
             size_t min = size_ < b.size() ? size_ : b.size();
@@ -65,13 +66,13 @@ class Slice {
             return r;
         }
         bool operator==(const Slice& b) {
-            return (size_ == b.size()) && (memcmp(data_, b.data, size_) == 0);
+            return (size_ == b.size()) && (memcmp(data_, b.data(), size_) == 0);
         }
         bool operator!=(const Slice& b) {
             return !(*this == b);
         }
         bool starts_with(const Slice& b) const {
-            return (size_ >= b.size()) && (memcmp(data_, b.data(), b_size) == 0);
+            return (size_ >= b.size()) && (memcmp(data_, b.data(), b.size()) == 0);
         }
     private:
         const char* data_;

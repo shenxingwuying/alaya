@@ -14,27 +14,14 @@
  */
 
 #include <errno.h>
+#include <stdint.h>
+#include "Slice.h"
 
 class Status {
     public:
-        Status() : state_(NULL) {}
+        Status() : state_(NULL) { }
         Status(const Status& s) {
             state_ = (s.state_ == NULL ? NULL : CopyState(s.state_));
-        }
-        Status(Code code, Slice msg, Slice msg2) {
-            uint32_t len1 = msg.size();
-            uint32_t len2 = msg2.size();
-            uint32_t size = len1 + (len2 ? len2 + 2 : 0);
-            state_ = new char[5+size];
-
-            memcpy(state_, &size, sizeof(uint32_t));
-            state_[4] = static_cast<char>(code);
-            memcpy(state_+5, msg.data(), len1);
-            if (len2) {
-                state_[len1+5] = ':';
-                state_[len1+6] = ' ';
-                memcpy(state_+len1+7, msg2.data(), len2);
-            }
         }
         ~Status() {
             if (state_ != NULL) {
@@ -51,7 +38,7 @@ class Status {
         static Status OK() {
             return Status();
         }
-        static Status IOError(const std::string& msg, int errcode) const {
+        static Status IOError(const std::string& msg, int errcode) {
             return Status::IOError(msg, strerror(errcode));
         }
         static Status IOError(const Slice& msg, const Slice& msg2 = Slice()) {
@@ -72,12 +59,28 @@ class Status {
             kNotSupport,
             kInvaildArgument,
             kIOError
-        }
+        };
         Code code() {
-            return (state == NULL) ? kOk : static_cast<Code>(state_[4]);
+            return (state_ == NULL) ? kOk : static_cast<Code>(state_[4]);
         }
-};
+        Status(Code code, Slice msg, Slice msg2) {
+            uint32_t len1 = msg.size();
+            uint32_t len2 = msg2.size();
+            uint32_t size = len1 + (len2 ? len2 + 2 : 0);
+            char *result = new char[5+size];
 
+            memcpy(result, &size, sizeof(uint32_t));
+            result[4] = static_cast<char>(code);
+            memcpy(result+5, msg.data(), len1);
+            if (len2) {
+                result[len1+5] = ':';
+                result[len1+6] = ' ';
+                memcpy(result+len1+7, msg2.data(), len2);
+            }
+            state_ = result;
+        }
+
+};
 
 
 /* vim: set expandtab ts=4 sw=4 sts=4 tw=100: */
