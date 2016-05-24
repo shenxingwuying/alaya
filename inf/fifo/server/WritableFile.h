@@ -25,8 +25,8 @@
 
 class WritableFile {
     public:
-        WritableFile() {}
-        virtual ~WritableFile();
+        WritableFile() { }
+        virtual ~WritableFile() { }
         virtual Status Open() = 0;
         virtual Status Append(const Slice& data) = 0;
         virtual Status Close() = 0;
@@ -44,17 +44,17 @@ class PosixWritableFile : public WritableFile {
         std::string filename_;
         FILE* file_;
     public:
-        PosixWritableFile(std::string filename, FILE* file) : filename_(filename), file_(file) {}
+        PosixWritableFile(std::string filename, FILE* file) : filename_(filename), file_(file) { }
         PosixWritableFile(std::string filename) : filename_(filename), file_(NULL) {
             Open();
         }
-        ~PosixWritableFile() {
+        virtual ~PosixWritableFile() {
             if (file_ != NULL) {
                 fclose(file_);
             }
         }
 
-        Status Open() {
+        virtual Status Open() {
             if (file_ == NULL) {
                 if ((file_ = fopen(filename_.data(), "w+")) != 0) {
                     return Status::IOError(filename_, errno);
@@ -64,14 +64,14 @@ class PosixWritableFile : public WritableFile {
             }
             return Status::OK();
         }
-        Status Append(const Slice& data) {
+        virtual Status Append(const Slice& data) {
             size_t r = fwrite(data.data(), 1, data.size(), file_);
             if (r != data.size()) {
                 return Status::IOError(filename_, errno);
             }
             return Status::OK();
         }
-        Status Close() {
+        virtual Status Close() {
             Status result;
             if (fclose(file_) != 0) {
                 result = Status::IOError(filename_, errno);
@@ -79,13 +79,13 @@ class PosixWritableFile : public WritableFile {
             file_ = NULL;
             return result;
         }
-        Status Flush() {
+        virtual Status Flush() {
             if (fflush(file_) != 0) {
                 return Status::IOError(filename_, errno);
             }
             return Status::OK();
         }
-        Status Sync() {
+        virtual Status Sync() {
             // not implement
             return Status::OK();
         }

@@ -17,7 +17,10 @@
 
 int main(int argc, char* argv[]) {
     PosixWritableFile file("test.txt");
-
+    file.Append("abc");
+    file.Append("123");
+    file.Flush();
+    file.Close();
     return 0;
 }
 

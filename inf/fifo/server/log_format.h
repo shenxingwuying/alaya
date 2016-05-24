@@ -17,15 +17,13 @@
 #define ALAYA_FIFO_PARAM
 
 #include <stdio.h>
-static const int kBlockSize = 32768;
-static const int kFileSize = 64 * 1024 * 1024;
-static const int kMaxRecord = kFileSize;
 
 struct LogHeader {
     uint64_t sequence;
-    uint32_t length;
+    // uint64_t timestamp;
+    uint16_t length;
+    uint16_t type;
     uint32_t crc32;
-    char type;
 };
 
 struct LogEntry {
@@ -33,8 +31,19 @@ struct LogEntry {
     const char* content;
 };
 
+enum RecordType {
+    kZeroType = 0,
+    kFullType,
+    kFirstType,
+    kMiddleType,
+    kLastType
+};
 
-
+static const int kBlockSize = 32768;
+static const int kMaxRecodeType = kLastType;
+static const int kFileSize = 64 * 1024 * 1024;
+static const int kMaxRecordSize = kFileSize;
+static const int kHeaderSize = sizeof(struct LogHeader);
 
 #endif
 

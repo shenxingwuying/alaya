@@ -12,6 +12,8 @@
  * @brief: 
  *
  */
+#ifndef ALAYA_INF_FIFO_STATUS_H
+#define ALAYA_INF_FIFO_STATUS_H
 
 #include <errno.h>
 #include <stdint.h>
@@ -82,5 +84,6 @@ class Status {
 
 };
 
+#endif
 
 /* vim: set expandtab ts=4 sw=4 sts=4 tw=100: */
