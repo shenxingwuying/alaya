@@ -11,3 +11,4 @@ test/jdk_tool/*
 tools/cpp/*
 tools/python/*
 tools/op/*
+public/
