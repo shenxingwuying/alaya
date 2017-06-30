@@ -36,7 +36,14 @@ class ConfigureFile(object):
 class Configure(object):
     def __init__(self, config_file):
         self.config_file = config_file
-        self.urls = config_file.get_key("spider", "urls")
-
+        self.url_list_file = config_file.get_key("spider", "url_list_file")
+        self.output_directory = config_file.get_key("spider", "output_directory")
+        self.max_depth = config_file.get_key("spider", "max_depth")
+        self.crawl_interval = config_file.get_key("spider", "crawl_interval")
+        self.crawl_timeout = config_file.get_key("spider", "crawl_timeout")
+        self.target_url = config_file.get_key("spider", "target_url")
+        self.thread_count = config_file.get_key("spider", "thread_count")
+    def __str__(self):
+        return self.config_file
 
 # vim: set expandtab ts=4 sw=4 sts=4 tw=100: #
