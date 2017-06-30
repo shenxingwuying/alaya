@@ -10,6 +10,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+import config
 
 if __name__ == "__main__":
     print "Main"
